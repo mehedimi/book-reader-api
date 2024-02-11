@@ -24,6 +24,11 @@ class BookReaderController extends WP_REST_Controller
 			'methods' => 'GET',
 			'callback' => [$this, 'index']
 		]);
+
+	    register_rest_route($this->namespace, '/authors', [
+		    'methods' => 'GET',
+		    'callback' => [$this, 'authors']
+	    ]);
     }
 
 
@@ -67,6 +72,27 @@ class BookReaderController extends WP_REST_Controller
 				];
 			}, $query->get())
 		]);
+	}
+
+	public function authors() {
+		$data = DB::table('term_taxonomy')
+					->withOne('author', function (WithOne $term) {
+						$term->from('terms');
+					}, 'term_id', 'term_id')
+		          ->where('taxonomy', 'author')
+					->where('count', '>', 0)
+		          ->get();
+
+		return [
+			'data' => array_map(function ($author) {
+				return [
+					'id' => $author->term_id,
+					'name' => $author->author->name,
+					'slug' => $author->author->slug,
+					'count' => $author->count
+				];
+			}, $data)
+		];
 	}
 }
 

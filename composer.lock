@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec9f6173c0081785998d3e2192745999",
+    "content-hash": "8db41438f302250520426094543eaae4",
     "packages": [
         {
             "name": "mehedimi/wp-query-builder",
@@ -60,16 +60,16 @@
         },
         {
             "name": "mehedimi/wp-query-builder-ext",
-            "version": "0.2",
+            "version": "0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mehedimi/wp-query-builder-ext.git",
-                "reference": "808633ee21dc601401a61b72ff1fd9c21aaf1cf5"
+                "reference": "c1e15cebc9d9150e8534e9fe0d540134f3a30fe5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mehedimi/wp-query-builder-ext/zipball/808633ee21dc601401a61b72ff1fd9c21aaf1cf5",
-                "reference": "808633ee21dc601401a61b72ff1fd9c21aaf1cf5",
+                "url": "https://api.github.com/repos/mehedimi/wp-query-builder-ext/zipball/c1e15cebc9d9150e8534e9fe0d540134f3a30fe5",
+                "reference": "c1e15cebc9d9150e8534e9fe0d540134f3a30fe5",
                 "shasum": ""
             },
             "require": {
@@ -101,10 +101,12 @@
             "description": "An Extension of WP Query Builder",
             "support": {
                 "issues": "https://github.com/mehedimi/wp-query-builder-ext/issues",
-                "source": "https://github.com/mehedimi/wp-query-builder-ext/tree/0.2"
+                "source": "https://github.com/mehedimi/wp-query-builder-ext/tree/0.3"
             },
-            "time": "2023-04-23T10:39:50+00:00"
-        },
+            "time": "2024-02-11T00:53:38+00:00"
+        }
+    ],
+    "packages-dev": [
         {
             "name": "symfony/polyfill-mbstring",
             "version": "v1.29.0",
@@ -269,7 +271,6 @@
             "time": "2024-01-23T15:02:46+00:00"
         }
     ],
-    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],
