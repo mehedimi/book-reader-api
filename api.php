@@ -68,7 +68,7 @@ class BookReaderController extends WP_REST_Controller
 							'name' => $author->name
 						];
 					}, $post->authors),
-					'thumbnail' => $post->thumbnail?->guid
+					'thumbnail' => $post->thumbnail->guid ?? null
 				];
 			}, $query->get())
 		]);
