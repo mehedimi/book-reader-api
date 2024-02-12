@@ -89,6 +89,7 @@ class BookReaderController extends WP_REST_Controller
 	public function taxonomy(WP_REST_Request $request) {
 		$taxonomy_type = $request->get_param('taxonomy') === 'authors' ? 'author' : "category";
 		$search = $request->get_param('s');
+		$id = $request->get_param('id');
 
 		$query = DB::table('term_taxonomy')
 					->join('terms', 'term_taxonomy.term_id', '=', 'terms.term_id')
@@ -99,17 +100,23 @@ class BookReaderController extends WP_REST_Controller
 			$query->where('name', 'like', "%$search%");
 		}
 
+		if ($id) {
+			$query->where('terms.term_id', $id);
+		}
+
 		$data = $query->get();
 
+		$items = array_map(function ($item) {
+			return [
+				'id' => $item->term_id,
+				'name' => $item->name,
+				'slug' => $item->slug,
+				'count' => $item->count
+			];
+		}, $data);
+
 		return [
-			'data' => array_map(function ($author) {
-				return [
-					'id' => $author->term_id,
-					'name' => $author->name,
-					'slug' => $author->slug,
-					'count' => $author->count
-				];
-			}, $data)
+			'data' => $id && !empty($items) ? $items[0] : $items
 		];
 	}
 }
