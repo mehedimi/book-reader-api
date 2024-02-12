@@ -26,7 +26,7 @@ class BookReaderController extends WP_REST_Controller
 			'callback' => [$this, 'index']
 		]);
 
-	    register_rest_route($this->namespace, '/(?P<taxomony>authors|categories)', [
+	    register_rest_route($this->namespace, '/(?P<taxonomy>authors|categories)', [
 		    'methods' => 'GET',
 		    'callback' => [$this, 'taxonomy']
 	    ]);
