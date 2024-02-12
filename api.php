@@ -77,6 +77,7 @@ class BookReaderController extends WP_REST_Controller
 					'title' => $post->post_title,
 					'authors' => array_map(function ($author) {
 						return [
+							'id' => $author->term_id,
 							'name' => $author->name
 						];
 					}, $post->authors),
