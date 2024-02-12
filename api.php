@@ -5,6 +5,7 @@
 
 use Mehedi\WPQueryBuilder\DB;
 use Mehedi\WPQueryBuilder\Query\Builder;
+use Mehedi\WPQueryBuilder\Query\Join;
 use Mehedi\WPQueryBuilder\Relations\WithOne;
 use Mehedi\WPQueryBuilderExt\Relations\WithTaxonomy;
 
@@ -25,9 +26,9 @@ class BookReaderController extends WP_REST_Controller
 			'callback' => [$this, 'index']
 		]);
 
-	    register_rest_route($this->namespace, '/authors', [
+	    register_rest_route($this->namespace, '/(?P<taxomony>authors|categories)', [
 		    'methods' => 'GET',
-		    'callback' => [$this, 'authors']
+		    'callback' => [$this, 'taxonomy']
 	    ]);
     }
 
@@ -36,6 +37,8 @@ class BookReaderController extends WP_REST_Controller
 		$limit = $request->get_param('limit') ?? 10;
 		$lastId = $request->get_param('lastId');
 		$s = $request->get_param('s');
+		$termId = $request->get_param('termId');
+
 
 		$query = DB::table('posts')
 		          ->where('post_type', 'books')
@@ -46,7 +49,6 @@ class BookReaderController extends WP_REST_Controller
 		          ->withOne('thumbnail', function ( WithOne $thumbnailQuery) {
 						$thumbnailQuery->from('posts')->where('post_type', 'attachment');
 				}, 'post_parent')
-				->orderBy('ID', 'desc')
 				->limit($limit);
 
 		if ($lastId) {
@@ -56,6 +58,16 @@ class BookReaderController extends WP_REST_Controller
 		if ($s) {
 			$query->where('post_title', 'like', "%$s%");
 		}
+
+		if ($termId) {
+			$query->join('term_relationships', 'posts.ID', '=', 'term_relationships.object_id')
+			      ->join('term_taxonomy', function ( Join $join) use($termId) {
+					  $join->on('term_relationships.term_taxonomy_id', '=', 'term_taxonomy.term_taxonomy_id')
+					       ->where('term_taxonomy.term_id', $termId);
+			      });
+		}
+
+		$data = $query->get();
 
 
 		return rest_ensure_response([
@@ -70,25 +82,26 @@ class BookReaderController extends WP_REST_Controller
 					}, $post->authors),
 					'thumbnail' => $post->thumbnail->guid ?? null
 				];
-			}, $query->get())
+			}, $data)
 		]);
 	}
 
-	public function authors() {
+	public function taxonomy(WP_REST_Request $request) {
+		$taxonomy_type = $request->get_param('taxonomy') === 'authors' ? 'author' : "category";
+
 		$data = DB::table('term_taxonomy')
-					->withOne('author', function (WithOne $term) {
-						$term->from('terms');
-					}, 'term_id', 'term_id')
-		          ->where('taxonomy', 'author')
+					->join('terms', 'term_taxonomy.term_id', '=', 'terms.term_id')
+					->where('taxonomy', 'author')
 					->where('count', '>', 0)
-		          ->get();
+					->orderBy('name')
+					->get();
 
 		return [
 			'data' => array_map(function ($author) {
 				return [
 					'id' => $author->term_id,
-					'name' => $author->author->name,
-					'slug' => $author->author->slug,
+					'name' => $author->name,
+					'slug' => $author->slug,
 					'count' => $author->count
 				];
 			}, $data)
